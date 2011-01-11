@@ -1,7 +1,36 @@
 package com.philipcali
 
-import hotcode._
-import hotcode.HotSwapCenter._
+import hotcode.HotSwap._
+
+trait Logger {
+  type IO = java.io.PrintStream
+  def creation: IO
+ 
+  def withFile(op: IO => Unit) {
+    val writer = creation 
+
+    try{ 
+      op(writer)
+    } finally {
+      writer.flush()
+    }
+  }
+
+  def log(text: String) {
+    withFile { logged =>
+      val s = "%s\n" format(text)
+      logged.print(s)
+    }
+  }
+}
+
+class ConsoleLogger extends Logger {
+  def creation = Console.out
+}
+
+class FileLogger extends Logger {
+  def creation = new IO(new java.io.FileOutputStream("out.txt", true))
+}
 
 object Main extends Application {
   val logger = new FileLogger 
