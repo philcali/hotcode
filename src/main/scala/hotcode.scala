@@ -49,6 +49,8 @@ case class Quit()
 import scala.collection.mutable.{ Map => MMap }
 
 object HotSwapCenter {  
+  // This is a bug on the jvm
+  RemoteActor.classLoader = this.getClass().getClassLoader()
 
   private val dynamicBlocks = MMap[Symbol, Responder]()
 
@@ -71,9 +73,7 @@ object HotSwapCenter {
     val code = if(dynamicBlocks.contains(key)) dynamicBlocks(key) 
                else RemoteActor.select(Node(ip, 9000), key)
 
-    println("Received actor")
-
-    //code ! Replace(new Computation(block))
+    code ! Replace(new Computation(block))
   }
 
   def shutdown() = {
@@ -83,7 +83,7 @@ object HotSwapCenter {
 
 class Responder(key: Symbol, init: Computation) extends Actor {
   RemoteActor.alive(9000)
-  RemoteActor.register(key, self)
+  RemoteActor.register(key, this)
 
   val computations = MMap[String, Computation]("HEAD" -> init) 
 
