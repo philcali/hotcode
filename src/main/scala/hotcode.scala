@@ -1,7 +1,7 @@
 package com.philipcali
 package hotcode
 
-import scala.actors.remote.RemoteActor._
+import scala.actors.remote.RemoteActor
 import scala.actors.remote.Node
 import scala.actors.Actor
 import Actor._
@@ -48,7 +48,8 @@ case class Quit()
 
 import scala.collection.mutable.{ Map => MMap }
 
-object HotSwapCenter {
+object HotSwapCenter {  
+
   private val dynamicBlocks = MMap[Symbol, Responder]()
 
   def dynamic(key: Symbol)(block: => Any) = {
@@ -68,9 +69,11 @@ object HotSwapCenter {
   def update(key: Symbol, ip: String = "127.0.0.1")(block: => Any) {
     // First let's see of the actor exists locally
     val code = if(dynamicBlocks.contains(key)) dynamicBlocks(key) 
-               else select(Node(ip, 9000), key)
+               else RemoteActor.select(Node(ip, 9000), key)
 
-    code ! Replace(new Computation(block))
+    println("Received actor")
+
+    //code ! Replace(new Computation(block))
   }
 
   def shutdown() = {
@@ -79,8 +82,8 @@ object HotSwapCenter {
 }
 
 class Responder(key: Symbol, init: Computation) extends Actor {
-  alive(9000)
-  register(key, self)
+  RemoteActor.alive(9000)
+  RemoteActor.register(key, self)
 
   val computations = MMap[String, Computation]("HEAD" -> init) 
 
@@ -100,8 +103,9 @@ class Responder(key: Symbol, init: Computation) extends Actor {
           computations.put("HEAD", comp)
         }
         case ListRevisions() => {
-          println("Listing revisions:")
-          computations.keys.foreach(println)
+          val logger = new FileLogger
+          logger.log("Listing revisions:")
+          computations.keys.foreach(logger.log)
         }
         case Quit() => this.exit()
       }
