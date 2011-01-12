@@ -7,7 +7,7 @@ import scala.actors.Actor
 import Actor._
 
 @serializable
-class Computation(op: => Any) {
+class Computation(op: => Unit) {
   def operation = { op }
 }
 case class Replace(comp: Computation)

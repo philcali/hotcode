@@ -12,7 +12,7 @@ trait Logger {
     try{ 
       op(writer)
     } finally {
-      writer.flush()
+      writer.close()
     }
   }
 
