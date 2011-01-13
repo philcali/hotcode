@@ -1,6 +1,7 @@
 package com.philipcali
 
 import hotcode.HotSwap._
+import hotcode.Context
 
 trait Logger {
   type IO = java.io.PrintStream
@@ -37,8 +38,10 @@ object Main extends Application {
 
   for(i <- 1 to 10) {
     println("Iteration %d" format(i))
-    dynamic('main) {
-      logger.log("Potentially dynamic code")
+    dynamic('main, Context(("log" -> logger), ("i" -> i))) { ctx =>
+      val l: Logger = ctx("log")
+      val x: Int = ctx("i")
+      l.log("Potentially dynamic code: %d" format(x))
     }
 
     Thread.sleep(1000)
@@ -46,8 +49,9 @@ object Main extends Application {
 }
 
 object Main2 extends Application {
-  val logger = new FileLogger
-  update('main) {
-    logger.log("Changed")
+  update('main) { ctx =>
+    val l: Logger = ctx("log")
+    val x: Int = ctx("i")
+    l.log("Changed... at %d" format(x))
   }
 }
