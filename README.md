@@ -28,12 +28,12 @@ irc robot, computer game, etc), wrap your potentially dynamic portions like so:
 
 Calling `dynamic`, labels that code as replaceable. Change this code like this:
 
-import com.philipcali.hotcode.HotSwap._
+    import com.philipcali.hotcode.HotSwap._
 
-update('message) {
-  case Context(msg: String) =>
-    println("Changing code, dude! %s" format(msg))
-}
+    update('message) {
+      case Context(msg: String) =>
+        println("Changing code, dude! %s" format(msg))
+    }
 
 That's all there is to it.
 
