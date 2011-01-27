@@ -80,7 +80,7 @@ class HotSwap(key: Symbol, init: Computation) extends Actor {
 
   val computations = LB[Computation](init)
 
-  def replaceable(comp: Computation) = comp.description == "original" || 
+  private def replaceable(comp: Computation) = comp.description == "original" || 
                                        comp.description == "replace"
 
   override def act() {

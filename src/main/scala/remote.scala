@@ -18,10 +18,9 @@ trait RemoteControlled {
 
   def responder: PartialFunction[Any, Unit] = {
     case Computation(fun, descript) => 
-      val results = fun(selfContext)
-      respond(Response(results))
+      val results = fun(selfContext) 
+      respond(results)
   }
-
 
   val server = actor {
     RemoteActor.alive(port)
@@ -33,5 +32,4 @@ trait RemoteControlled {
       }
     }
   }
-
 }

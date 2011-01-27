@@ -26,7 +26,7 @@ class ControllerSpec extends FlatSpec with ShouldMatchers {
       react {
         case Computation(comp, desc) => 
           val results = comp(ctx) 
-          sender ! Response(results)
+          sender ! results
         case Ack(text) => assert(text == "connected")
       }
     }
@@ -75,6 +75,6 @@ class ControllerSpec extends FlatSpec with ShouldMatchers {
         "%s %s %s" format(names(0), "Michael", names(1))
     }))
 
-    result() should be === Response("Philip Michael Cali")
+    result() should be === "Philip Michael Cali"
   }
 }
